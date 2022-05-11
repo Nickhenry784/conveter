@@ -1,0 +1,16 @@
+sử dụng font Aller Display
+Name app: Converter multi-function app
+Name apk: com.multiconverter.multiconverter
+
+Ng dùng chọn mục nào thì hiện ô đổi thông số cho mục đó, click buy more use
+thì ra trang mua bán
+1 lần click convert thì trừ 1 lượt 
+
+
+
+
+turn : 50,100,200,300
+Price: 0.99,1.99,4.99,9.99
+
+Sub:500,1000
+Price: 10$/week, 20$/tháng
