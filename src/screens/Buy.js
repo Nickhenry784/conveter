@@ -7,7 +7,7 @@ import {
   Alert,
   ActivityIndicator,
   TouchableOpacity,
-  Image,
+  Dimensions,
   ScrollView,
 } from 'react-native';
 
@@ -17,23 +17,20 @@ import RNIap, {
 } from 'react-native-iap';
 import {useDispatch} from 'react-redux';
 import {items} from '../conf';
+import { subs } from '../subf';
 import {increamentByAmount} from '../redux/pointSlice';
 
 let purchaseUpdateSubscription = null;
 let purchaseErrorSubscription = null;
-
-const fakeProducts = [
-  {productId: 'p_10', localizedPrice: '$10.00', description: 'product 1'},
-  {productId: 'p_20', localizedPrice: '$20.00', description: 'product 2'},
-  {productId: 'p_30', localizedPrice: '$30.00', description: 'product 3'},
-  {productId: 'p_40', localizedPrice: '$40.00', description: 'product 4'},
-];
+const windowWidth = Dimensions.get('screen').width;
+const windowHeight = Dimensions.get('screen').height;
 
 export default function Buy() {
   // const [products, setProducts] = useState(fakeProducts);
   // const [isLoading, setIsLoading] = useState(false);
 
   const [products, setProducts] = useState([]);
+  const [subItems, setSubItems] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
 
   const dispatch = useDispatch();
@@ -57,8 +54,10 @@ export default function Buy() {
       });
 
       const res = await RNIap.getProducts(items.map(item => item.sku));
+      const sub = await RNIap.getSubscriptions(subs.map(item => item.sub));
 
       setProducts(res);
+      setSubItems(sub);
     } catch (err) {
       Alert.alert(err.message);
       // console.warn(err.code, err.message);
@@ -93,6 +92,12 @@ export default function Buy() {
       case items[3].sku:
         dispatch(increamentByAmount(items[3].value));
         break;
+      case subs[0].sub:
+        dispatch(increamentByAmount(subs[0].value));
+        break;
+      case subs[1].sub:
+        dispatch(increamentByAmount(subs[1].value));
+        break;
       default:
         break;
     }
@@ -100,6 +105,10 @@ export default function Buy() {
 
   const handleRequestBuy = productId => {
     RNIap.requestPurchase(productId);
+  };
+
+  const handleRequestSub = productId => {
+    RNIap.requestSubscription(productId);
   };
 
   return (
@@ -111,6 +120,7 @@ export default function Buy() {
       ) : (
         <>
           <View style={styles.itemList3}>
+            <Text style={styles.textlabel}>In-app purchase List</Text>
             {products.map((product, index) => (
               <View style={styles.item3} key={product.productId}>
                 <TouchableOpacity
@@ -118,6 +128,17 @@ export default function Buy() {
                   style={styles.item3Content}>
                   <Text style={styles.price}>{product.localizedPrice}</Text>
                   <Text style={styles.descr}>{product.description}</Text>
+                </TouchableOpacity>
+              </View>
+            ))}
+            <Text style={styles.textlabel}>Subscription List</Text>
+            {subItems.map((subItem, index) => (
+              <View style={styles.item3} key={subItem.productId}>
+                <TouchableOpacity
+                  onPress={() => handleRequestSub(subItem.productId)}
+                  style={styles.item3Content}>
+                  <Text style={styles.price}>{subItem.localizedPrice}</Text>
+                  <Text style={styles.descr}>{subItem.description}</Text>
                 </TouchableOpacity>
               </View>
             ))}
@@ -135,6 +156,13 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     flexWrap: 'wrap',
+  },
+  textlabel: {
+    marginTop: windowHeight * 0.1,
+    fontSize: 30,
+    fontWeight: 'bold',
+    color: 'white',
+    marginBottom: 20,
   },
   bg: {
     backgroundColor: '#223351',

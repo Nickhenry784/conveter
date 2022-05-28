@@ -1,4 +1,4 @@
-package com.langworth.multiconverter;
+package com.amazon.langworth.multiconverter;
 
 import com.facebook.react.ReactActivity;
 
